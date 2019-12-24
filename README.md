@@ -3,8 +3,11 @@
 **Usage:**
 
 1、pip install -r requirements.txt
+
 2、run services，python app.py
+
 3、sqlite3 app.db < app.sql
+
 4、api test
 
 ```

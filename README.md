@@ -3,8 +3,8 @@
 Usage:
 
 1、pip install -r requirement.txt
-2、
-
+2、run services，python app.py
+3、api test
 
 ```
 # api test tool: httpie,Json Object Default:tada:
@@ -17,4 +17,7 @@ http POST http://127.0.0.1:5000/api/v1/users username="foo" email="1329441308@qq
 
 # DELETE
 http delete http://127.0.0.1:5000/api/v1/users username="foo"
+
+# PUT
+http PUT http://127.0.0.1:5000/api/v1/users/1 password="123456"
 ```

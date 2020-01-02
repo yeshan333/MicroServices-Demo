@@ -1,8 +1,10 @@
 # -*- utf-8 -*-
+
 import json
 import sqlite3
 
 from flask import Flask, jsonify, make_response, request, abort
+from time import strftime, gmtime
 
 app = Flask(__name__)
 
@@ -150,6 +152,87 @@ def upd_user(user):
                 cursor.execute("UPDATE users SET {0}=? WHERE id=?".format(i), (user[i], user["id"]))
                 conn.commit()
                 conn.close()
+        return "Sucess"
+    return "Failed"
+
+# ------------------------------------------------------------------------------------------------------------
+
+@app.route('/api/v2/tweets', methods=['GET'])
+def get_tweets():
+    return list_tweets()
+
+def list_tweets():
+    conn = sqlite3.connect('app.db')
+    print("Open Database Sucessful!")
+    api_list = []
+    cursor = conn.execute('SELECT username, body, tweet_time, id FROM tweets')
+    data = cursor.fetchall()
+    print(data)
+    if data!=0:
+        for row in data:
+            tweets = {}
+            tweets['Tweet By'] = row[0]
+            tweets['Body'] = row[1]
+            tweets['TimeStamp'] = row[2]
+            tweets['id'] = row[3]
+            api_list.append(tweets)
+    else:
+        return api_list
+    conn.close()
+    return jsonify({'tweets_list': api_list})
+
+@app.route('/api/v2/tweets/<int:id>', methods=['GET'])
+def get_tweet(id):
+    return list_tweet(id)
+
+def list_tweet(user_id):
+    conn = sqlite3.connect('app.db')
+    print("OPen Database Sucessful!")
+    # api_list = []
+    cursor = conn.execute("SELECT id, username, body, tweet_time FROM tweets WHERE id=?", (user_id, ))
+    data = cursor.fetchall()
+    print(data)
+    if len(data) == 0:
+        abort(404)
+    else:
+        user = {}
+        user['id'] = data[0][0]
+        user['username'] = data[0][1]
+        user['body'] = data[0][2]
+        user['tweet_time'] = data[0][3]
+    conn.close()
+    return jsonify(user)
+
+@app.route('/api/v2/tweets', methods=['POST'])
+def add_tweets():
+    user_tweet = {}
+    if not request.json or not 'username' in request.json or not 'body' in request.json:
+        abort(400)
+
+    user_tweet['username'] = request.json['username']
+    user_tweet['body'] = request.json['body']
+    user_tweet['created_at'] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+
+    print(user_tweet)
+
+    return jsonify({'status': add_tweet(user_tweet)}), 200
+
+
+# add tweet for someone
+def add_tweet(new_tweets):
+    conn = sqlite3.connect('app.db')
+    print('Open Dataabase Sucessful!')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username=?", (new_tweets['username'],))
+    data = cursor.fetchall()
+
+    if len(data) == 0:
+        abort(404)
+    else:
+        cursor.execute("INSERT INTO tweets (username, body, tweet_time) VALUES(?,?,?)", (new_tweets['username'], \
+            new_tweets['body'], new_tweets['created_at']))
+        conn.commit()
+        conn.close()
         return "Sucess"
     return "Failed"
 

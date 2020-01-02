@@ -1,0 +1,5 @@
+create table tweets(id integer primary key autoincrement,username varchar2(30), body varchar2(30), tweet_time date);
+
+CREATE TABLE users(username vachar2(30),emailid varchar2(30),password varchar2(30),full_name varchar2(30),id integer primary key autoincrement);
+
+CREATE TABLE apirelease(buildtime date,version varchar(30) primary key,links varchar2(30),methods varchar2(30));

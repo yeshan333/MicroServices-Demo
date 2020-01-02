@@ -215,7 +215,7 @@ def add_tweets():
 
     print(user_tweet)
 
-    return jsonify({'status': add_tweet(user_tweet)}), 200
+    return jsonify({'status': add_tweet(user_tweet)}), 201
 
 
 # add tweet for someone

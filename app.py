@@ -3,7 +3,7 @@
 import json
 import sqlite3
 
-from flask import Flask, jsonify, make_response, request, abort
+from flask import Flask, jsonify, make_response, request, abort, render_template
 from time import strftime, gmtime
 
 app = Flask(__name__)
@@ -31,12 +31,34 @@ def home_index():
     conn.close()
     return jsonify({'api_version': api_list}), 200
 
+# get all user information
+@app.route('/api/v1/users', methods=['GET'])
+def get_users():
+    return list_users()
+
+def list_users():
+    conn = sqlite3.connect('app.db')
+    print ("Opened database successfully");
+    api_list=[]
+    cursor = conn.execute("SELECT username, full_name,  emailid, password, id from users")
+    for row in cursor:
+        a_dict = {}
+        a_dict['username'] = row[0]
+        a_dict['name'] = row[1]
+        a_dict['email'] = row[2]
+        a_dict['password'] = row[3]
+        a_dict['id'] = row[4]
+        api_list.append(a_dict)
+
+    conn.close()
+    return jsonify({'user_list': api_list})
+
 # get user information
 @app.route('/api/v1/users/<int:user_id>', methods=['GET'])
-def get_users(user_id):
-    return list_users(user_id)
+def get_user(user_id):
+    return list_user(user_id)
 
-def list_users(user_id):
+def list_user(user_id):
     conn = sqlite3.connect('app.db')
     print('Open Database Sucessful!')
     api_list = []
@@ -70,7 +92,6 @@ def create_user():
         'email': request.json['email'],
         'full_name': request.json['username'],
         'password': request.json['password'],
-        'id': request.json['id']
     }
     return jsonify({'status': add_user(user)}), 201
 
@@ -89,8 +110,8 @@ def add_user(new_user):
     if len(data) != 0:
         abort(409)
     else:
-        cursor.execute('insert into users values(?,?,?,?,?)', (new_user['username'], \
-            new_user['email'], new_user['password'], new_user['full_name'], new_user['id']))
+        cursor.execute('insert into users (username, emailid, password, full_name) values(?,?,?,?)', (new_user['username'], \
+            new_user['email'], new_user['password'], new_user['full_name']))
         # assert 1==2
         conn.commit()
         conn.close()
@@ -171,9 +192,9 @@ def list_tweets():
     if data!=0:
         for row in data:
             tweets = {}
-            tweets['Tweet By'] = row[0]
-            tweets['Body'] = row[1]
-            tweets['TimeStamp'] = row[2]
+            tweets['username'] = row[0]
+            tweets['body'] = row[1]
+            tweets['timestamp'] = row[2]
             tweets['id'] = row[3]
             api_list.append(tweets)
     else:
@@ -235,6 +256,16 @@ def add_tweet(new_tweets):
         conn.close()
         return "Sucess"
     return "Failed"
+
+# -----------------------------------------------------------------------------------------------------
+# frontend logic
+@app.route('/adduser')
+def adduser():
+    return render_template('addusers.html')
+
+@app.route('/addtweets')
+def addtweets():
+    return render_template('addtweets.html')
 
 if __name__ == '__main__':
     app.run('127.0.0.1', port=5000, debug=True)

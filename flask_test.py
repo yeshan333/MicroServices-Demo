@@ -32,7 +32,7 @@ class FlaskappTests(unittest.TestCase):
     # POST /api/v1/users
     def test_users_status_code_post(self):
         result = self.app.post('/api/v1/users', data='{"username": "xxxx", "email": "1wwww10@qq.comss", \
-            "password": "123456222", "id": "3"}', content_type='application/json')
+            "password": "123456222"}', content_type='application/json')
         # assert the status code of the response
         self.assertEqual(result.status_code, 201)
 

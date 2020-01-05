@@ -3,14 +3,23 @@
 import json
 import sqlite3
 
-from flask import Flask, jsonify, make_response, request, abort, render_template
+from flask import Flask, jsonify, make_response, request, abort, render_template, redirect, url_for
+from flask import session
+from flask_cors import CORS, cross_origin
 from time import strftime, gmtime
 
 app = Flask(__name__)
+app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'  # session config
 
-@app.route('/')
+
+CORS(app)
+
+# CROSS-ORIGIN-RESOURCE-SHARING
+cors = CORS(app, resources={r"/api/*": {"origin": "*"}})
+
+""" @app.route('/')
 def index():
-    return 'Nothing'
+    return 'Nothing' """
 
 # get api information
 @app.route('/api/v1/info')
@@ -266,6 +275,35 @@ def adduser():
 @app.route('/addtweets')
 def addtweets():
     return render_template('addtweets.html')
+
+# ----------------------------------------------------------------------------------------
+# security
+def sumSessionCounter():
+    try:
+        session['counter'] += 1
+    except KeyError:
+        session['counter'] = 1
+
+@app.route('/')
+def main():
+    sumSessionCounter()
+    return render_template('main.html')
+
+@app.route('/addname')
+def addname():
+    sumSessionCounter()
+    if request.args.get('yourname'):
+        session['name'] = request.args.get('yourname')
+        return redirect(url_for('main'))
+    else:
+        return render_template('addname.html', session=session)
+
+@app.route('/clear')
+def clearsession():
+    # Clear the session
+    session.clear()
+    # Redirect the user to the main page
+    return redirect(url_for('main'))
 
 if __name__ == '__main__':
     app.run('127.0.0.1', port=5000, debug=True)

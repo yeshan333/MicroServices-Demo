@@ -7,7 +7,7 @@
 
 2、run services，python app.py
 
-3、.\mongod.exe --config .\mongod.conf # shift+mouse right powershell
+3、.\mongod.exe --config .\mongod.conf # shift+mouse right powershell, mount mongo server
 
 4、api unittest, pip install nose
 

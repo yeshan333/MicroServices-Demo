@@ -2,12 +2,12 @@
 
 **Usage:**
 
-```text
+```bash
 1、pip install -r requirements.txt
 
 2、run services，python app.py
 
-~~~3、sqlite3 app.db < app.sql~~~
+3、.\mongod.exe --config .\mongod.conf # shift+mouse right powershell
 
 4、api unittest, pip install nose
 

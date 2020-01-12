@@ -274,7 +274,7 @@ def sumSessionCounter():
 @app.route('/')
 def main():
     sumSessionCounter()
-    return render_template('main.html')
+    return render_template('index.html')
 
 @app.route('/addname')
 def addname():

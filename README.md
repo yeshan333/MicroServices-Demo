@@ -38,3 +38,7 @@ http POST http://127.0.0.1:5000/api/v2/tweets username="yeshan333" body="Hello 2
 
 http http://127.0.0.1:5000/api/v2/tweets/2 -v
 ```
+
+```
+npm run build
+```

@@ -1,10 +1,16 @@
 import React, {Component} from 'react'
 
 class Tweet extends Component {
+    constructor(props) {
+        super(props);
+        //https://zh-hans.reactjs.org/docs/refs-and-the-dom.html#callback-refs
+        this.tweetTextArea = React.createRef();
+    }
+
     sendTweet(event) {
         event.preventDefault();
-        this.props.sendTweet(this.refs.tweetTextArea.value);
-        this.refs.tweetTextArea.value = '';
+        const node = this.tweetTextArea.current;
+        this.props.sendTweet(node.value);
     }
 
     render() {
@@ -12,7 +18,7 @@ class Tweet extends Component {
             <div className="row">
                 <form onSubmit={this.sendTweet.bind(this)}>
                 <div className="input-field">
-                    <textarea ref="tweetTextArea" className="materialize-textarea" />
+                    <textarea ref={this.tweetTextArea} className="materialize-textarea" />
                     <label>How do you doing?</label>
                     <button className="btn waves-effect waves-light right">
                         Tweet Now<i className="material-icons right">send</i>

@@ -71,7 +71,8 @@ def home_index():
     print('Open Database Sucessful !')
     api_list = []
     for row in db.find():
-        api_list.append(str(row))
+        row['_id'] = str(row['_id'])
+        api_list.append(row)
     return jsonify({'api_version': api_list}), 200
 
 # get all user information
@@ -86,7 +87,8 @@ def list_users():
 
     for i in db.find():
         # print(type(i)) # i is a python dict
-        user_list.append(str(i))
+        i['_id'] = str(i['_id'])
+        user_list.append(i)
     if user_list == []:
         abort(404)
 
@@ -104,7 +106,8 @@ def list_user(user_id):
 
     for i in db.find({"id": user_id}):
         # print(type(i)) # i is a python dict
-        user_list.append(str(i))
+        i['_id'] = str(i['_id'])
+        user_list.append(i)
     if user_list == []:
         abort(404)
 
@@ -204,9 +207,20 @@ def list_tweets():
     tweet_list = []
     db = connection.cloud_native.tweets
     for row in db.find():
-        tweet_list.append(str(row))
-
-    return jsonify({'tweets_list': tweet_list})
+        # TypeError: Object of type ObjectId is not JSON serializable
+        # slove Json problem
+        # row['_id'] = str(row['_id'])#can't do that
+        new_row = {}
+        new_row['_id'] = str(row['_id'])
+        new_row['id'] = row['id']
+        new_row['username'] = row['username']
+        new_row['body'] = row['body']
+        new_row['tweetedby'] = row['tweetedby']
+        new_row['timestamp'] = row['timestamp']
+        tweet_list.append(new_row)
+        # print(row)
+    print(tweet_list)
+    return jsonify({"tweets_list": tweet_list})
 
 @app.route('/api/v2/tweets/<int:id>', methods=['GET'])
 def get_tweet(id):
@@ -217,7 +231,8 @@ def list_tweet(user_id):
     tweet_list = []
     tweet = db.find({'id': user_id})
     for i in tweet:
-        tweet_list.append(str(i))
+        i['_id'] = str(i['_id'])
+        tweet_list.append(i)
     if tweet_list == []:
         abort(404)
     return jsonify({'tweet': tweet_list})

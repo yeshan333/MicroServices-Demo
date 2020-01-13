@@ -14,27 +14,31 @@ class Main extends React.Component {
 
     constructor(props) {
         super(props);
-/*         const {cookies} = props;
         this.state = {
-            userId: cookies.get('session'),
-        }; */
-        this.state = {
-            tweets: [
-            {
-                'id': 1,
-                'name': 'guest',
-                'body': '"Listen to your heart. It knows all things!"- Paulo Coelho # Motivation',
-                'tweetedby': 'guest',
-                'timestamp': new Date().toISOString()
-            },
-            {
-                'id': 2,
-                'name': 'guest',
-                'body': '"Listen to your heart. It knows all things!"- Paulo Coelho # Motivation',
-                'tweetedby': 'guest',
-                'timestamp': new Date().toUTCString()
-            }]
+            tweets: []
         }
+    }
+
+    componentDidMount() {
+        var self = this;
+        $.ajax({
+            url: 'http://127.0.0.1:5000/api/v2/tweets',
+            success: function(data) {
+                //console.log(typeof data + '1')
+                console.log(typeof data['tweets_list'][0] + '66');//type：string
+                //console.log(data['tweets_list'][0]['_id'])//undefined
+                //const tweets_list = JSON.parse(data['tweets_list'][0]);
+                //console.log(typeof tweets_list);
+                self.setState({
+                    tweets: data['tweets_list']
+                });
+                alert(self.state.tweets);
+                return console.log("Sucess");
+            },
+            error: function() {
+                return console.log("Failed")
+            }
+        })
     }
 
     addTweet(tweet) {
